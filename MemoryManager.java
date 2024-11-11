@@ -66,7 +66,7 @@ class PageTable {
  * MemoryManager class manages memory block allocations using different allocation strategies
  */
 class MemoryManager {
-    
+
     private List<MemoryBlock> memoryBlocks;  // List of physical memory blocks (frames)
     private PageTable pageTable;  // Page table to map virtual pages to physical frames
     private int lastAllocatedIndex = 0;  // Keeps track of the last allocation position for Next-Fit
@@ -87,8 +87,8 @@ class MemoryManager {
 
     /*
      * First-Fit Allocation: Allocate the first block that fits
-     * @Param requestSize - 
-     * @Param virtualPage - 
+     * @Param requestSize - integer representing the amount of memory that a program (or virtual page) wants to allocate from the available physical memory blocks
+     * @Param virtualPage - integer representing the specific virtual page that we are working on
      * @Return - returns a boolean representing a match for this allocation type
      */
     public boolean firstFit(int requestSize, int virtualPage) {
@@ -108,8 +108,8 @@ class MemoryManager {
 
     /*
      * Best-Fit Allocation: Allocate the smallest block that fits the request size
-     * @Param requestSize - 
-     * @Param virtualPage - 
+     * @Param requestSize - integer representing the amount of memory that a program (or virtual page) wants to allocate from the available physical memory blocks
+     * @Param virtualPage - integer representing the specific virtual page that we are working on
      * @Return - returns a boolean representing a match for this allocation type
      */
     public boolean bestFit(int requestSize, int virtualPage) {
@@ -141,8 +141,8 @@ class MemoryManager {
  
     /*
      * Worst-Fit Allocation: Allocate the largest block that fits the request size
-     * @Param requestSize - 
-     * @Param virtualPage -
+     * @Param requestSize - integer representing the amount of memory that a program (or virtual page) wants to allocate from the available physical memory blocks
+     * @Param virtualPage - integer representing the specific virtual page that we are working on
      * @Return - returns a boolean representing a match for this allocation type
      */
     public boolean worstFit(int requestSize, int virtualPage) {
@@ -174,8 +174,8 @@ class MemoryManager {
  
     /*
      * Next-Fit Allocation: Allocate the next available block that fits, starting from where the last allocation was made
-     * @Param requestSize - 
-     * @Param virtualPage - 
+     * @Param requestSize - integer representing the amount of memory that a program (or virtual page) wants to allocate from the available physical memory blocks
+     * @Param virtualPage - integer representing the specific virtual page that we are working on
      * @Return - returns a boolean representing a match for this allocation type
      */
     public boolean nextFit(int requestSize, int virtualPage) {
