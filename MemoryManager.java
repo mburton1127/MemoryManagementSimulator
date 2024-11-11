@@ -1,110 +1,175 @@
-
 import java.util.ArrayList;
 import java.util.List;
 
-// MemoryBlock class represents a block of memory with its size and allocation status
+// MemoryBlock class represents a physical memory block (or frame).
 class MemoryBlock {
-    int size; // Size of the memory block
-    boolean isAllocated; // Whether the block is allocated or not
+    int size;  // Size of the memory block (physical frame size)
+    boolean isAllocated;  // Allocation status (whether the block is allocated or not)
 
-    // Constructor to initialize the memory block with a size
+    // Constructor to initialize the memory block with a given size
     public MemoryBlock(int size) {
         this.size = size;
-        this.isAllocated = false; // Initially, the block is not allocated
+        this.isAllocated = false;  // Initially, memory block is not allocated
     }
 }
 
-// MemoryManager class manages the memory blocks and allocation strategies
-class MemoryManager {
-    private List<MemoryBlock> memoryBlocks; // List of memory blocks
+// PageTable class represents a virtual page to physical frame mapping (Page Table).
+class PageTable {
+    private List<Integer> pageTableEntries;  // Each entry will map a virtual page to a physical frame
 
-    // Constructor to initialize the memory blocks with the given sizes
-    public MemoryManager(int[] blockSizes) {
+    // Constructor to initialize the page table with a number of virtual pages
+    public PageTable(int numberOfPages) {
+        pageTableEntries = new ArrayList<>();
+        for (int i = 0; i < numberOfPages; i++) {
+            pageTableEntries.add(-1);  // Initially, no virtual pages are mapped to any physical frames (-1 means unallocated)
+        }
+    }
+
+    // Method to map a virtual page to a physical frame (frameIndex) when a block is allocated
+    public void mapPageToFrame(int virtualPage, int physicalFrameIndex) {
+        if (virtualPage >= 0 && virtualPage < pageTableEntries.size()) {
+            pageTableEntries.set(virtualPage, physicalFrameIndex);  // Set the page table entry for the given virtual page
+        }
+    }
+
+    // Displays the current mapping of virtual pages to physical frames
+    public void displayPageTable() {
+        System.out.println("Page Table:");
+        for (int i = 0; i < pageTableEntries.size(); i++) {
+            // Print each entry mapping a virtual page to a physical frame
+            System.out.println("Virtual Page " + i + " -> Physical Frame: " + pageTableEntries.get(i));
+        }
+    }
+}
+
+// MemoryManager class manages memory block allocations using different allocation strategies.
+class MemoryManager {
+    private List<MemoryBlock> memoryBlocks;  // List of physical memory blocks (frames)
+    private PageTable pageTable;  // Page table to map virtual pages to physical frames
+    private int lastAllocatedIndex = 0;  // Keeps track of the last allocation position for Next-Fit
+
+    // Constructor to initialize memory manager with memory blocks and a page table
+    public MemoryManager(int[] blockSizes, int numberOfPages) {
         memoryBlocks = new ArrayList<>();
         for (int size : blockSizes) {
-            memoryBlocks.add(new MemoryBlock(size)); // Create a memory block for each size
+            memoryBlocks.add(new MemoryBlock(size));  // Create and add memory blocks based on given sizes
         }
+        pageTable = new PageTable(numberOfPages);  // Initialize the page table with a number of pages
     }
 
-    // First-Fit Allocation: Allocates memory from the first block that fits
-    public boolean firstFit(int requestSize) {
-        // Traverse the memory blocks and find the first available block that can fit the request
-        for (MemoryBlock block : memoryBlocks) {
+    // First-Fit Allocation: Allocate the first block that fits
+    public boolean firstFit(int requestSize, int virtualPage) {
+        for (int i = 0; i < memoryBlocks.size(); i++) {
+            MemoryBlock block = memoryBlocks.get(i);
             if (!block.isAllocated && block.size >= requestSize) {
-                block.isAllocated = true; // Mark the block as allocated
+                block.isAllocated = true;  // Mark the block as allocated
+                pageTable.mapPageToFrame(virtualPage, i);  // Map the virtual page to this physical frame
                 System.out.println("First-Fit: Allocated " + requestSize + " to block of size " + block.size);
-                return true; // Allocation successful
+                return true;
             }
         }
+        // If no suitable block is found
         System.out.println("First-Fit: No suitable block found for " + requestSize);
-        return false; // No suitable block found
+        return false;
     }
 
-    // Best-Fit Allocation: Allocates the smallest block that fits the request
-    public boolean bestFit(int requestSize) {
-        int bestIndex = -1; // Index of the best fitting block
-        int minWaste = Integer.MAX_VALUE; // To keep track of the smallest waste
+    // Best-Fit Allocation: Allocate the smallest block that fits the request size
+    public boolean bestFit(int requestSize, int virtualPage) {
+        int bestIndex = -1;
+        int minWaste = Integer.MAX_VALUE;
 
-        // Traverse through all blocks and find the one with the least wasted space
+        // Search for the best-fitting block
         for (int i = 0; i < memoryBlocks.size(); i++) {
             MemoryBlock block = memoryBlocks.get(i);
-            // Block should not be allocated and should fit the request
             if (!block.isAllocated && block.size >= requestSize) {
-                int waste = block.size - requestSize; // Calculate waste (unused space)
+                int waste = block.size - requestSize;  // Calculate wasted space
                 if (waste < minWaste) {
-                    minWaste = waste; // Update the smallest waste
-                    bestIndex = i; // Update the best block index
+                    minWaste = waste;
+                    bestIndex = i;  // Track the block with the least waste
                 }
             }
         }
 
-        // If a suitable block is found, allocate it
         if (bestIndex != -1) {
-            memoryBlocks.get(bestIndex).isAllocated = true; // Allocate the block
-            System.out.println("Best-Fit: Allocated " + requestSize + " to block of size " +
-                               memoryBlocks.get(bestIndex).size);
-            return true; // Allocation successful
+            memoryBlocks.get(bestIndex).isAllocated = true;  // Mark the best block as allocated
+            pageTable.mapPageToFrame(virtualPage, bestIndex);  // Map the virtual page to the best-fitting block
+            System.out.println("Best-Fit: Allocated " + requestSize + " to block of size " + memoryBlocks.get(bestIndex).size);
+            return true;
         }
-
+        // If no suitable block is found
         System.out.println("Best-Fit: No suitable block found for " + requestSize);
-        return false; // No suitable block found
+        return false;
     }
 
-    // Worst-Fit Allocation: Allocates the largest available block
-    public boolean worstFit(int requestSize) {
-        int worstIndex = -1; // Index of the worst fitting block
-        int maxWaste = Integer.MIN_VALUE; // To keep track of the largest waste
+    // Worst-Fit Allocation: Allocate the largest block that fits the request size
+    public boolean worstFit(int requestSize, int virtualPage) {
+        int worstIndex = -1;
+        int maxWaste = Integer.MIN_VALUE;
 
-        // Traverse through all blocks and find the one with the largest wasted space
+        // Search for the worst-fitting block (largest block with enough space)
         for (int i = 0; i < memoryBlocks.size(); i++) {
             MemoryBlock block = memoryBlocks.get(i);
-            // Block should not be allocated and should fit the request
             if (!block.isAllocated && block.size >= requestSize) {
-                int waste = block.size - requestSize; // Calculate waste (unused space)
+                int waste = block.size - requestSize;  // Calculate wasted space
                 if (waste > maxWaste) {
-                    maxWaste = waste; // Update the largest waste
-                    worstIndex = i; // Update the worst block index
+                    maxWaste = waste;
+                    worstIndex = i;  // Track the block with the most remaining space
                 }
             }
         }
 
-        // If a suitable block is found, allocate it
         if (worstIndex != -1) {
-            memoryBlocks.get(worstIndex).isAllocated = true; // Allocate the block
-            System.out.println("Worst-Fit: Allocated " + requestSize + " to block of size " +
-                               memoryBlocks.get(worstIndex).size);
-            return true; // Allocation successful
+            memoryBlocks.get(worstIndex).isAllocated = true;  // Mark the worst block as allocated
+            pageTable.mapPageToFrame(virtualPage, worstIndex);  // Map the virtual page to the worst-fitting block
+            System.out.println("Worst-Fit: Allocated " + requestSize + " to block of size " + memoryBlocks.get(worstIndex).size);
+            return true;
         }
-
+        // If no suitable block is found
         System.out.println("Worst-Fit: No suitable block found for " + requestSize);
-        return false; // No suitable block found
+        return false;
     }
 
-    // Display the current memory blocks with their allocation status
+    // Next-Fit Allocation: Allocate the next available block that fits, starting from where the last allocation was made
+    public boolean nextFit(int requestSize, int virtualPage) {
+        // Start from where the last allocation was made
+        for (int i = lastAllocatedIndex; i < memoryBlocks.size(); i++) {
+            MemoryBlock block = memoryBlocks.get(i);
+            if (!block.isAllocated && block.size >= requestSize) {
+                block.isAllocated = true;  // Mark the block as allocated
+                lastAllocatedIndex = i;  // Update the last allocation index to current block
+                pageTable.mapPageToFrame(virtualPage, i);  // Map the virtual page to this physical frame
+                System.out.println("Next-Fit: Allocated " + requestSize + " to block of size " + block.size);
+                return true;
+            }
+        }
+
+        // If no suitable block is found in the remaining blocks, wrap around to the beginning
+        for (int i = 0; i < lastAllocatedIndex; i++) {
+            MemoryBlock block = memoryBlocks.get(i);
+            if (!block.isAllocated && block.size >= requestSize) {
+                block.isAllocated = true;  // Mark the block as allocated
+                lastAllocatedIndex = i;  // Update the last allocation index to current block
+                pageTable.mapPageToFrame(virtualPage, i);  // Map the virtual page to this physical frame
+                System.out.println("Next-Fit: Allocated " + requestSize + " to block of size " + block.size);
+                return true;
+            }
+        }
+
+        // If no suitable block is found
+        System.out.println("Next-Fit: No suitable block found for " + requestSize);
+        return false;
+    }
+
+    // Display the current memory block statuses (allocated or free)
     public void displayMemory() {
         for (MemoryBlock block : memoryBlocks) {
-            String status = block.isAllocated ? "Allocated" : "Free"; // Check if allocated or free
-            System.out.println("Block of size " + block.size + ": " + status); // Display the block status
+            String status = block.isAllocated ? "Allocated" : "Free";
+            System.out.println("Block of size " + block.size + ": " + status);
         }
+    }
+
+    // Display the current page table mappings
+    public void displayPageTable() {
+        pageTable.displayPageTable();
     }
 }
