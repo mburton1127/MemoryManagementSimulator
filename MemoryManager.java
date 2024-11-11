@@ -70,7 +70,6 @@ class MemoryManager {
     private List<MemoryBlock> memoryBlocks;  // List of physical memory blocks (frames)
     private PageTable pageTable;  // Page table to map virtual pages to physical frames
     private int lastAllocatedIndex = 0;  // Keeps track of the last allocation position for Next-Fit
-
  
     /*
      * Constructor to initialize memory manager with memory blocks and a page table
@@ -101,7 +100,7 @@ class MemoryManager {
                 return true;
             }
         }
-        // If no suitable block is found
+        // If no suitable block is found, print statement and return
         System.out.println("First-Fit: No suitable block found for " + requestSize);
         return false;
     }
@@ -134,7 +133,7 @@ class MemoryManager {
             System.out.println("Best-Fit: Allocated " + requestSize + " to block of size " + memoryBlocks.get(bestIndex).size);
             return true;
         }
-        // If no suitable block is found
+        // If no suitable block is found, print statement and return
         System.out.println("Best-Fit: No suitable block found for " + requestSize);
         return false;
     }
@@ -167,7 +166,7 @@ class MemoryManager {
             System.out.println("Worst-Fit: Allocated " + requestSize + " to block of size " + memoryBlocks.get(worstIndex).size);
             return true;
         }
-        // If no suitable block is found
+        // If no suitable block is found, print statement and return
         System.out.println("Worst-Fit: No suitable block found for " + requestSize);
         return false;
     }
@@ -203,11 +202,10 @@ class MemoryManager {
             }
         }
 
-        // If no suitable block is found
+        // If no suitable block is found, print statement and return
         System.out.println("Next-Fit: No suitable block found for " + requestSize);
         return false;
     }
-
 
     /*
      * Display the current memory block statuses (allocated or free)
@@ -219,7 +217,6 @@ class MemoryManager {
             System.out.println("Block of size " + block.size + ": " + status);
         }
     }
-
 
     /*
      * Display the current page table mappings

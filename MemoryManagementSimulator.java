@@ -6,14 +6,13 @@ public class MemoryManagementSimulator {
 
     public static void main(String[] args) {
 
-        // Initialize physical memory blocks with different sizes
-        int[] blockSizes = {100, 500, 200, 300, 600, 250};
+        int[] blockSizes = {100, 500, 200, 300, 600, 250};  // Initialize physical memory blocks with different sizes (sizes are arbitrarily chosen for this project)
         int numberOfPages = 6;  // Number of virtual pages to allocate
         MemoryManager manager = new MemoryManager(blockSizes, numberOfPages);
 
         // Display the initial state of memory and the page table
         System.out.println("Initial Memory State:");
-        manager.displayMemory();  // Show the status of each memory block (all free initially)
+        manager.displayMemory();  // Show the status of each memory block (all free initially)  
         manager.displayPageTable();  // Initially, no pages are allocated (all entries are -1)
         System.out.println();
 
