@@ -1,8 +1,11 @@
-
-// Main class to simulate memory management with different strategies.
+/*
+ * Main class of the Memory Management Simulator
+ * @Author - Matthew Burton
+ */
 public class MemoryManagementSimulator {
 
     public static void main(String[] args) {
+        
         // Initialize physical memory blocks with different sizes
         int[] blockSizes = {100, 500, 200, 300, 600, 250};
         int numberOfPages = 6;  // Number of virtual pages to allocate
