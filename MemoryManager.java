@@ -54,11 +54,15 @@ class PageTable {
      * @Return - none
      */
     public void displayPageTable() {
-        System.out.println("Page Table:");
+        System.out.println();
+        System.out.println(">>>>> Page Table <<<<<");
+        System.out.println();
         for (int i = 0; i < pageTableEntries.size(); i++) {
             // Print each entry mapping a virtual page to a physical frame
             System.out.println("Virtual Page " + i + " -> Physical Frame: " + pageTableEntries.get(i));
         }
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------");
     }
 }
 
@@ -212,6 +216,7 @@ class MemoryManager {
      * @Return - none
      */
     public void displayMemory() {
+        System.out.println();
         for (MemoryBlock block : memoryBlocks) {
             String status = block.isAllocated ? "Allocated" : "Free";
             System.out.println("Block of size " + block.size + ": " + status);

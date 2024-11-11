@@ -11,13 +11,14 @@ public class MemoryManagementSimulator {
         MemoryManager manager = new MemoryManager(blockSizes, numberOfPages);
 
         // Display the initial state of memory and the page table
-        System.out.println("Initial Memory State:");
+        System.out.println(">>>>> Initial Memory State <<<<<");
         manager.displayMemory();  // Show the status of each memory block (all free initially)  
         manager.displayPageTable();  // Initially, no pages are allocated (all entries are -1)
         System.out.println();
 
         // Test First-Fit strategy with different memory requests
-        System.out.println("Example for First-Fit Strategy:");
+        System.out.println(">>>>> Example for First-Fit Strategy <<<<<");
+        System.out.println();
         manager.firstFit(150, 0); // Request 150 units of memory (virtual page 0)
         manager.firstFit(450, 1); // Request 450 units of memory (virtual page 1)
         manager.firstFit(700, 2); // Request 700 units of memory (virtual page 2, should fail)
@@ -29,7 +30,8 @@ public class MemoryManagementSimulator {
         manager = new MemoryManager(blockSizes, numberOfPages);
 
         // Test Best-Fit strategy with different memory requests
-        System.out.println("Example for Best-Fit Strategy:");
+        System.out.println(">>>>> Example for Best-Fit Strategy <<<<<");
+        System.out.println();
         manager.bestFit(150, 0); // Request 150 units of memory (virtual page 0)
         manager.bestFit(450, 1); // Request 450 units of memory (virtual page 1)
         manager.bestFit(700, 2); // Request 700 units of memory (virtual page 2, should fail)
@@ -41,7 +43,8 @@ public class MemoryManagementSimulator {
         manager = new MemoryManager(blockSizes, numberOfPages);
 
         // Test Worst-Fit strategy with different memory requests
-        System.out.println("Example for Worst-Fit Strategy:");
+        System.out.println(">>>>> Example for Worst-Fit Strategy <<<<<");
+        System.out.println();
         manager.worstFit(150, 0); // Request 150 units of memory (virtual page 0)
         manager.worstFit(450, 1); // Request 450 units of memory (virtual page 1)
         manager.worstFit(700, 2); // Request 700 units of memory (virtual page 2, should fail)
@@ -53,7 +56,8 @@ public class MemoryManagementSimulator {
         manager = new MemoryManager(blockSizes, numberOfPages);
 
         // Test Next-Fit strategy with different memory requests
-        System.out.println("Example for Next-Fit Strategy:");
+        System.out.println(">>>>> Example for Next-Fit Strategy <<<<<");
+        System.out.println();
         manager.nextFit(150, 0); // Request 150 units of memory (virtual page 0)
         manager.nextFit(450, 1); // Request 450 units of memory (virtual page 1)
         manager.nextFit(700, 2); // Request 700 units of memory (virtual page 2, should fail)
