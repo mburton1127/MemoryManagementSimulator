@@ -58,8 +58,13 @@ class PageTable {
         System.out.println(">>>>> Page Table <<<<<");
         System.out.println();
         for (int i = 0; i < pageTableEntries.size(); i++) {
-            // Print each entry mapping a virtual page to a physical frame
-            System.out.println("Virtual Page " + i + " -> Physical Frame: " + pageTableEntries.get(i));
+
+            if (pageTableEntries.get(i) <= 0) {
+                // Print each entry mapping a virtual page to a physical frame
+                System.out.println("Virtual Page " + i + " -> Physical Frame: " + pageTableEntries.get(i) + " [Invalid]");
+            } else {
+                System.out.println("Virtual Page " + i + " -> Physical Frame: " + pageTableEntries.get(i) + " [Valid]");
+            }   
         }
         System.out.println("-------------------------------------------------------------");
         System.out.println("-------------------------------------------------------------");
