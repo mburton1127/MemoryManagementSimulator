@@ -63,6 +63,7 @@ class PageTable {
                 // Print each entry mapping a virtual page to a physical frame
                 System.out.println("Virtual Page " + i + " -> Physical Frame: " + pageTableEntries.get(i) + " [Invalid]");
             } else {
+                // Valid version
                 System.out.println("Virtual Page " + i + " -> Physical Frame: " + pageTableEntries.get(i) + " [Valid]");
             }   
         }
